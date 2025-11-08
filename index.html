@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Hook & Flow - Автоматизация бизнеса через Telegram-ботов и ИИ. Увеличиваем прибыль на 20-30% за 2 недели.">
+    <meta name="keywords" content="автоматизация бизнеса, telegram боты, чат-боты, ИИ для бизнеса, Берёзовский, Екатеринбург">
+    <title>Hook & Flow - Автоматизация бизнеса через Telegram-ботов</title>
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ===== Базовые стили ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --accent: #a855f7;
+            --gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ===== Прогресс-бар ===== */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--gradient);
+            z-index: 9999;
+            width: 0;
+        }
+
+        /* ===== Навигация ===== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h2 {
+            font-size: 24px;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-menu a:hover {
+            color: var(--text-primary);
+        }
+
+        /* ===== Кнопки ===== */
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            padding: 12px 28px;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-large {
+            padding: 16px 36px;
+            font-size: 16px;
+        }
+
+        .btn-full {
+            width: 100%;
+            text-align: center;
+        }
+
+        /* ===== Hero Section ===== */
+        .hero {
+            padding: 180px 0 100px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-background {
+            position: absolute;
+            top: -100px;
+            left: 0;
+            right: 0;
+            height: 120%;
+            background: radial-gradient(ellipse at top, rgba(99, 102, 241, 0.15), transparent 50%);
+            z-index: 0;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .hero-title {
+            font-size: 56px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 24px;
+        }
+
+        .gradient-text {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 60px;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-item h3 {
+            font-size: 36px;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .stat-item p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* ===== Section Title ===== */
+        .section-title {
+            font-size: 40px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        /* ===== Калькулятор ===== */
+        .roi-calculator {
+            padding: 100px 0;
+            background: linear-gradient(180deg, rgba(99, 102, 241, 0.03) 0%, transparent 100%);
+        }
+
+        .calculator-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            background: var(--card-bg);
+            padding: 60px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .input-group {
+            margin-bottom: 40px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .input-group input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(99, 102, 241, 0.2);
+            outline: none;
+            appearance: none;
+        }
+
+        .input-group input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--gradient);
+            cursor: pointer;
+        }
+
+        .input-group .value {
+            display: block;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            margin-top: 12px;
+            color: var(--primary-color);
+        }
+
+        .calculator-result {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            padding: 40px;
+            border-radius: 16px;
+        }
+
+        .result-value {
+            font-size: 48px;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+
+        .result-description {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        /* ===== Services ===== */
+        .services {
+            padding: 100px 0;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .service-card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            transition: transform 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .service-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .service-card h3 {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .service-card p {
+            color: var(--text-secondary);
+        }
+
+        /* ===== Contact ===== */
+        .contact {
+            padding: 100px 0;
+        }
+
+        .contact-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+        }
+
+        .contact-info h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .contact-details {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .contact-item {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .contact-item .icon {
+            font-size: 24px;
+        }
+
+        .contact-item a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .contact-item a:hover {
+            color: var(--primary-color);
+        }
+
+        .contact-form {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .contact-form input,
+        .contact-form textarea,
+        .contact-form select {
+            width: 100%;
+            padding: 16px;
+            margin-bottom: 20px;
+            background: var(--dark-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .contact-form input:focus,
+        .contact-form textarea:focus,
+        .contact-form select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-privacy {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        /* ===== Footer ===== */
+        .footer {
+            background: var(--card-bg);
+            padding: 60px 0 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 40px;
+        }
+
+        .footer-logo h3 {
+            font-size: 24px;
+            margin-bottom: 12px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 16px;
+        }
+
+        .social-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+        }
+
+        /* ===== Адаптив ===== */
+        @media (max-width: 968px) {
+            .hero-title {
+                font-size: 40px;
+            }
+            .calculator-wrapper,
+            .contact-wrapper,
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+            .hero-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+
+    
+</head>
+<body>
+    <!-- Прогресс-бар прокрутки -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Навигация -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo">
+                    <h2>Hook & Flow</h2>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="#services">Услуги</a></li>
+                    <li><a href="#advantages">Преимущества</a></li>
+                    <li><a href="#tariffs">Тарифы</a></li>
+                    <li><a href="#cases">Кейсы</a></li>
+                    <li><a href="#contact" class="btn-primary">Связаться</a></li>
+                </ul>
+                <div class="burger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-background"></div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">🚀 Уже 50+ довольных клиентов</div>
+                <h1 class="hero-title">
+                    Автоматизируем бизнес через<br>
+                    <span class="gradient-text">Telegram-ботов и ИИ</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Увеличиваем прибыль на 20-30% за 2 недели.<br>
+                    Ваш бот работает 24/7 без выходных и больничных.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#contact" class="btn-primary btn-large pulse">🚀 Получить расчёт за 5 минут</a>
+                    <a href="#tariffs" class="btn-secondary btn-large">Посмотреть тарифы</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <h3 data-count="50">0</h3>
+                        <p>Проектов</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>2 недели</h3>
+                        <p>Запуск</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3 data-count="30">0</h3>
+                        <p>Рост прибыли</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Калькулятор ROI -->
+    <section class="roi-calculator">
+        <div class="container">
+            <h2 class="section-title">💰 Рассчитайте вашу выгоду</h2>
+            <div class="calculator-wrapper">
+                <div class="calculator-inputs">
+                    <div class="input-group">
+                        <label>Сколько заказов вы получаете в месяц?</label>
+                        <input type="range" id="orders" min="10" max="1000" value="100" step="10">
+                        <span class="value" id="ordersValue">100</span>
+                    </div>
+                    <div class="input-group">
+                        <label>Средний чек (₽)</label>
+                        <input type="range" id="avgCheck" min="500" max="10000" value="2000" step="100">
+                        <span class="value" id="avgCheckValue">2000 ₽</span>
+                    </div>
+                </div>
+                <div class="calculator-result">
+                    <h3>Ваша экономия с ботом:</h3>
+                    <div class="result-value">
+                        <span id="savings">0</span> ₽/мес
+                    </div>
+                    <p class="result-description">За счёт автоматизации и роста конверсии на 25%</p>
+                    <a href="#contact" class="btn-primary">Хочу так же!</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <div class="container">
+            <h2 class="section-title">Кому подходит автоматизация</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">☕</div>
+                    <h3>Кафе и рестораны</h3>
+                    <p>Приём заказов, меню, оплата, система лояльности</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">💪</div>
+                    <h3>Фитнес-центры</h3>
+                    <p>Запись на тренировки, управление абонементами, напоминания</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">💇</div>
+                    <h3>Салоны красоты</h3>
+                    <p>Онлайн-запись, напоминания клиентам, программа лояльности</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🛍️</div>
+                    <h3>Магазины</h3>
+                    <p>Каталог товаров, корзина, оплата, уведомления о доставке</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🚗</div>
+                    <h3>Автосервисы</h3>
+                    <p>Каталог услуг, онлайн-запись, покупка запчастей, оплата, уведомления о новинках</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🐾</div>
+                    <h3>Зоосалоны и ветклиники</h3>
+                    <p>Запись на груминг и приём, напоминания о вакцинации, магазин товаров, программа лояльности</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🏥</div>
+                    <h3>Медицинские клиники</h3>
+                    <p>Запись к врачам, напоминания о приёме, результаты анализов, чат с администратором</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">📚</div>
+                    <h3>Образовательные центры</h3>
+                    <p>Расписание занятий, запись на курсы, оплата, рассылка материалов</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🏠</div>
+                    <h3>Недвижимость и риэлторы</h3>
+                    <p>Каталог объектов, фильтры поиска, заявки на просмотр, калькулятор ипотеки</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🍕</div>
+                    <h3>Доставка еды/продуктов</h3>
+                    <p>Меню, корзина, отслеживание заказа, программа лояльности</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🧹</div>
+                    <h3>Клининговые компании</h3>
+                    <p>Онлайн-заказ услуг, калькулятор стоимости, выбор времени, отзывы</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">✈️</div>
+                    <h3>Туристические агентства</h3>
+                    <p>Каталог туров, бронирование, оплата, поддержка 24/7, напоминания</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Advantages Section -->
+    <section id="advantages" class="advantages">
+        <div class="container">
+            <h2 class="section-title">Почему выбирают нас</h2>
+            <div class="advantages-grid">
+                <div class="advantage-card">
+                    <div class="advantage-icon">📈</div>
+                    <h3>Гарантия результата</h3>
+                    <p>Окупаемость за 3 месяца или вернём 50% стоимости. Мы уверены в качестве.</p>
+                </div>
+                <div class="advantage-card">
+                    <div class="advantage-icon">⚡</div>
+                    <h3>Быстрый запуск</h3>
+                    <p>7-14 дней вместо 3 месяцев. Используем готовые шаблоны для быстрого старта.</p>
+                </div>
+                <div class="advantage-card">
+                    <div class="advantage-icon">🛠️</div>
+                    <h3>Поддержка 24/7</h3>
+                    <p>Техподдержка в Telegram — отвечаем за 15 минут. Без очередей и заявок.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tariffs Section -->
+    <section id="tariffs" class="tariffs">
+        <div class="container">
+            <h2 class="section-title">Выберите готовое решение</h2>
+            <div class="tariffs-grid">
+                <div class="tariff-card">
+                    <div class="tariff-header">
+                        <h3>Старт</h3>
+                        <p class="tariff-subtitle">Для салонов и мастеров</p>
+                    </div>
+                    <div class="tariff-price">
+                        <span class="price">10 000 ₽</span>
+                        <span class="period">единоразово</span>
+                    </div>
+                    <ul class="tariff-features">
+                        <li>✅ Запись на услуги</li>
+                        <li>✅ Автоматические напоминания</li>
+                        <li>✅ Интеграция с оплатой</li>
+                        <li>✅ Запуск за 7 дней</li>
+                    </ul>
+                    <div class="tariff-support">
+                        <p>Поддержка: <strong>3 000 ₽/мес</strong></p>
+                    </div>
+                    <a href="#contact" class="btn-primary btn-full">Заказать</a>
+                </div>
+
+                <div class="tariff-card tariff-popular">
+                    <div class="popular-badge">🔥 Популярный</div>
+                    <div class="tariff-header">
+                        <h3>Рост</h3>
+                        <p class="tariff-subtitle">Для кафе и магазинов</p>
+                    </div>
+                    <div class="tariff-price">
+                        <span class="price">15 000 ₽</span>
+                        <span class="period">единоразово</span>
+                    </div>
+                    <ul class="tariff-features">
+                        <li>✅ Меню с корзиной</li>
+                        <li>✅ Онлайн-оплата</li>
+                        <li>✅ CRM-интеграция</li>
+                        <li>✅ Система лояльности</li>
+                        <li>✅ Запуск за 10 дней</li>
+                    </ul>
+                    <div class="tariff-support">
+                        <p>Поддержка: <strong>5 000 ₽/мес</strong></p>
+                    </div>
+                    <a href="#contact" class="btn-primary btn-full">Заказать</a>
+                </div>
+
+                <div class="tariff-card">
+                    <div class="tariff-header">
+                        <h3>Максимум</h3>
+                        <p class="tariff-subtitle">Для фитнес-центров</p>
+                    </div>
+                    <div class="tariff-price">
+                        <span class="price">25 000 ₽</span>
+                        <span class="period">единоразово</span>
+                    </div>
+                    <ul class="tariff-features">
+                        <li>✅ Управление абонементами</li>
+                        <li>✅ Расписание занятий</li>
+                        <li>✅ ИИ-аналитика</li>
+                        <li>✅ CRM для менеджеров</li>
+                        <li>✅ Запуск за 14 дней</li>
+                    </ul>
+                    <div class="tariff-support">
+                        <p>Поддержка: <strong>10 000 ₽/мес</strong></p>
+                    </div>
+                    <a href="#contact" class="btn-primary btn-full">Заказать</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cases Section -->
+    <section id="cases" class="cases">
+        <div class="container">
+            <h2 class="section-title">Что говорят клиенты</h2>
+            <div class="cases-grid">
+                <div class="case-card">
+                    <div class="case-rating">⭐⭐⭐⭐⭐</div>
+                    <div class="case-header">
+                        <h4>Фитнес-центр LION FITNESS</h4>
+                        <p class="case-location">📍 Берёзовский</p>
+                    </div>
+                    <p class="case-text">
+                        "Раньше администратор тратил 3 часа в день на запись клиентов. 
+                        Теперь бот обрабатывает 90% записей. Выручка выросла на 25%."
+                    </p>
+                    <div class="case-author">
+                        <strong>Иван Петров</strong> — владелец
+                    </div>
+                </div>
+
+                <div class="case-card">
+                    <div class="case-rating">⭐⭐⭐⭐⭐</div>
+                    <div class="case-header">
+                        <h4>Кафе "Прованс"</h4>
+                        <p class="case-location">📍 Екатеринбург</p>
+                    </div>
+                    <p class="case-text">
+                        "Боялись, что клиенты не будут заказывать через бота. 
+                        Средний чек вырос на 15% за счёт допродаж. Окупили за 2 месяца."
+                    </p>
+                    <div class="case-author">
+                        <strong>Мария Смирнова</strong> — управляющая
+                    </div>
+                </div>
+
+                <div class="case-card">
+                    <div class="case-rating">⭐⭐⭐⭐⭐</div>
+                    <div class="case-header">
+                        <h4>Салон красоты "Шарм"</h4>
+                        <p class="case-location">📍 Берёзовский</p>
+                    </div>
+                    <p class="case-text">
+                        "Клиенты забывали о записи, и мы теряли деньги. 
+                        Бот напоминает за день. Пропущенные записи снизились с 30% до 5%."
+                    </p>
+                    <div class="case-author">
+                        <strong>Анна Кузнецова</strong> — администратор
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq">
+        <div class="container">
+            <h2 class="section-title">Частые вопросы</h2>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Сколько времени занимает разработка?</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>От 7 до 14 дней в зависимости от сложности проекта. Мы используем готовые шаблоны, что значительно ускоряет процесс.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Нужно ли мне разбираться в технологиях?</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Нет, мы делаем всё за вас. Обучим вашу команду работе с ботом за 1 час, и предоставим видеоинструкции.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Что если бот не подойдёт?</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Мы даём гарантию окупаемости за 3 месяца. Если бот не окупится — вернём 50% стоимости разработки.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Какая поддержка включена?</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Техподдержка 24/7 в Telegram, исправление ошибок, консультации по работе с ботом, бесплатные обновления безопасности.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section class="process">
+        <div class="container">
+            <h2 class="section-title">Как мы работаем</h2>
+            <div class="process-grid">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <h3>Бесплатный аудит</h3>
+                    <p>Изучаем ваш бизнес, выявляем узкие места, предлагаем решение за 30 минут</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <h3>Согласование</h3>
+                    <p>Определяем функции бота, фиксируем цену и сроки за 1-2 дня</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <h3>Разработка</h3>
+                    <p>Создаём и тестируем бота, обучаем команду за 5-10 дней</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <h3>Запуск и поддержка</h3>
+                    <p>Запускаем бота, подключаем техподдержку 24/7</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="contact-wrapper">
+                <div class="contact-info">
+                    <h2>Готовы увеличить прибыль<br>на 20-30%?</h2>
+                    <p>Оставьте заявку — мы позвоним в течение 15 минут и предложим решение под ваш бизнес</p>
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <span class="icon">📞</span>
+                            <div>
+                                <strong>Телефон</strong>
+                                <p><a href="tel:+79126285824">+7 (912) 628-58-24</a></p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <span class="icon">💬</span>
+                            <div>
+                                <strong>Telegram</strong>
+                                <p><a href="https://t.me/chapman_d" target="_blank">@chapman_d</a></p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <span class="icon">📧</span>
+                            <div>
+                                <strong>Email</strong>
+                                <p><a href="mailto:vdovindima999999@gmail.com">vdovindima999999@gmail.com</a></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="trust-badges">
+                        <div class="trust-item">
+                            <span>✓</span>
+                            <p>Ответим за 15 минут</p>
+                        </div>
+                        <div class="trust-item">
+                            <span>✓</span>
+                            <p>Гарантия результата</p>
+                        </div>
+                        <div class="trust-item">
+                            <span>✓</span>
+                            <p>Без предоплаты</p>
+                        </div>
+                    </div>
+                </div>
+                <form class="contact-form" id="contactForm">
+                    <input type="text" name="name" placeholder="Ваше имя" required>
+                    <input type="tel" name="phone" placeholder="Телефон" required pattern="[0-9+() -]+">
+                    <input type="email" name="email" placeholder="Email">
+                    <select name="business" required>
+                        <option value="">Тип вашего бизнеса</option>
+                        <option value="cafe">Кафе/Ресторан</option>
+                        <option value="fitness">Фитнес-центр</option>
+                        <option value="beauty">Салон красоты</option>
+                        <option value="shop">Магазин</option>
+                        <option value="autoservice">Автосервис</option>
+                        <option value="other">Другое</option>
+                    </select>
+                    <textarea name="message" placeholder="Расскажите о вашем бизнесе" rows="4"></textarea>
+                    <button type="submit" class="btn-primary btn-full">💬 Заказать бесплатный аудит</button>
+                    <p class="form-privacy">Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности</p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h3>Hook & Flow</h3>
+                    <p>Автоматизация бизнеса через Telegram-ботов</p>
+                    <p class="footer-address">г. Берёзовский, Свердловская область</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Навигация</h4>
+                    <ul>
+                        <li><a href="#services">Услуги</a></li>
+                        <li><a href="#tariffs">Тарифы</a></li>
+                        <li><a href="#cases">Кейсы</a></li>
+                        <li><a href="#contact">Контакты</a></li>
+                    </ul>
+                </div>
+                <div class="footer-social">
+                    <h4>Мы в соцсетях</h4>
+                    <div class="social-links">
+                        <a href="https://t.me/+YuuINzvUpJwxNGQy" target="_blank">Telegram</a>
+                        <a href="https://www.instagram.com/" target="_blank">Instagram</a>
+                        <a href="https://vk.com/" target="_blank">VK</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Hook & Flow. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Кнопка "Наверх" -->
+    <button class="scroll-top" id="scrollTop">↑</button>
+
+    <!-- Live уведомления -->
+    <div class="live-notifications">
+        <div class="notification">
+            <span class="notification-icon">✅</span>
+            <span class="notification-text">Салон красоты в Екатеринбурге только что заказал бота</span>
+        </div>
+    </div>
+
+    <!-- JavaScript в КОНЦЕ body -->
+    <script src="script.js"></script>
+</body>
+</html>
